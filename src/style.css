@@ -1,0 +1,49 @@
+:root {
+  --red: #93000b;
+  --soft: #fbf2f0;
+  --line: #ebdad6;
+  --bs-danger: var(--red);
+  --bs-danger-rgb: 147, 0, 11;
+  --bs-tertiary-bg: var(--soft);
+  --bs-body-bg: #fff8f6;
+  --bs-body-color: #2a2423;
+  --bs-card-border-color: var(--line);
+}
+
+body {
+  line-height: 1.6;
+}
+
+.btn-danger {
+  --bs-btn-bg: var(--red);
+  --bs-btn-border-color: var(--red);
+  --bs-btn-hover-bg: #6f0008;
+  --bs-btn-hover-border-color: #6f0008;
+}
+
+.btn-outline-danger {
+  --bs-btn-color: var(--red);
+  --bs-btn-border-color: var(--red);
+  --bs-btn-hover-bg: var(--red);
+  --bs-btn-hover-border-color: var(--red);
+}
+
+.site-header nav a,
+.site-header nav .dropdown-toggle {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-header nav .dropdown-toggle {
+  font: inherit;
+  line-height: inherit;
+}
+
+.site-header nav a:hover,
+.site-header nav .dropdown-toggle:hover {
+  color: var(--red);
+}
+
+.photo {
+  aspect-ratio: 4 / 3;
+}
