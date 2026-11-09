@@ -1,12 +1,38 @@
 import { useState } from 'react'
 import { pageUrl } from './index.jsx'
-import { menuByCategory } from './order-menu.js'
+import { createContactOrder, menuByCategory, menuPrices } from './order-menu.js'
+import { formatRupiah, readOrders, saveOrders } from './cart-utils.js'
+import { printReceipt } from './receipt.js'
 
 function KontakPesan() {
   const [nama, setNama] = useState('')
+  const [telepon, setTelepon] = useState('')
   const [jumlah, setJumlah] = useState(1)
   const [kategori, setKategori] = useState('')
   const [menu, setMenu] = useState('')
+  const [layanan, setLayanan] = useState('Makan di Tempat')
+  const [catatan, setCatatan] = useState('')
+  const [order, setOrder] = useState(null)
+  const [printError, setPrintError] = useState('')
+
+  function submitOrder(event) {
+    event.preventDefault()
+    if (!menuByCategory[kategori]?.includes(menu)) {
+      return
+    }
+
+    const newOrder = createContactOrder({
+      category: kategori,
+      menu,
+      customer: nama,
+      phone: telepon,
+      quantity: jumlah,
+      service: layanan,
+      notes: catatan,
+    })
+    saveOrders([newOrder, ...readOrders()])
+    setOrder(newOrder)
+  }
 
   return (
     <>
@@ -21,10 +47,44 @@ function KontakPesan() {
       <section className="py-5">
         <div className="container">
           <div className="row g-4">
-            <form className="card p-4 col-lg-8" action="#" method="post">
+            {order ? (
+              <section className="card p-4 col-lg-8" aria-labelledby="order-success-title">
+                <span className="badge bg-success align-self-start mb-2">Pesanan berhasil dicatat</span>
+                <h2 id="order-success-title">Pesanan Anda sudah masuk</h2>
+                <p>Nomor pesanan: <strong>{order.id}</strong></p>
+                <p>{order.items[0].name} &times; {order.items[0].quantity} — {formatRupiah(order.total)}</p>
+                <p className="text-secondary">Pesanan tersimpan dan dapat dilihat admin pada browser ini.</p>
+                <div className="d-flex gap-2 flex-wrap">
+                  <button
+                    className="btn btn-danger"
+                    type="button"
+                    onClick={() => setPrintError(
+                      printReceipt(order) ? '' : 'Jendela cetak diblokir browser. Izinkan pop-up lalu coba lagi.',
+                    )}
+                  >
+                    <i className="bi bi-printer me-1" aria-hidden="true" />Cetak Struk
+                  </button>
+                  <button className="btn btn-outline-danger" type="button" onClick={() => {
+                    setOrder(null)
+                    setPrintError('')
+                    setNama('')
+                    setTelepon('')
+                    setJumlah(1)
+                    setKategori('')
+                    setMenu('')
+                    setLayanan('Makan di Tempat')
+                    setCatatan('')
+                  }}>
+                    Buat Pesanan Lain
+                  </button>
+                </div>
+                {printError && <p className="alert alert-warning mt-3 mb-0" role="alert">{printError}</p>}
+              </section>
+            ) : (
+            <form className="card p-4 col-lg-8" onSubmit={submitOrder}>
               <span className="badge rounded-pill bg-warning-subtle text-danger-emphasis fw-bold">FORMULIR PEMESANAN</span>
               <h2>Detail Pembelian Anda</h2>
-              <p className="text-secondary mb-3">Konfirmasi cepat via WhatsApp.</p>
+              <p className="text-secondary mb-3">Pesanan akan langsung dicatat setelah formulir dikirim.</p>
 
               <div className="mb-3">
                 <label className="form-label" htmlFor="nama">Nama Lengkap <span>*</span></label>
@@ -35,15 +95,22 @@ function KontakPesan() {
                   name="nama"
                   placeholder="Contoh: Budi Santoso"
                   value={nama}
-                  onChange={(e) => setNama(e.target.value)}
+                  onChange={(event) => setNama(event.target.value)}
                   required
                 />
-                <p className="small text-secondary mb-0">Hasil Inputan: {nama}</p>
               </div>
               <div className="mb-3">
-                <label className="form-label" htmlFor="wa">Nomor WhatsApp <span>*</span></label>
-                <input type="tel" className="form-control" id="wa" name="wa" placeholder="Contoh: 081234567890" required />
-                <p className="small text-secondary">Pastikan nomor aktif untuk konfirmasi kurir / admin.</p>
+                <label className="form-label" htmlFor="wa">Nomor Telepon <span>*</span></label>
+                <input
+                  type="tel"
+                  className="form-control"
+                  id="wa"
+                  name="wa"
+                  placeholder="Contoh: 081234567890"
+                  value={telepon}
+                  onChange={(event) => setTelepon(event.target.value)}
+                  required
+                />
               </div>
               <div className="mb-3">
                 <label className="form-label" htmlFor="kategori">Kategori Menu <span>*</span></label>
@@ -89,45 +156,48 @@ function KontakPesan() {
                   id="jumlah"
                   name="jumlah"
                   value={jumlah}
-                  onChange={(e) => setJumlah(Number(e.target.value))}
+                  onChange={(event) => setJumlah(Math.max(1, Number(event.target.value)))}
                   min="1"
                   required
                 />
-                <h3 className="h6 mt-2">Penambahan Ke: {jumlah}</h3>
-                <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => setJumlah(jumlah + 1)}>
-                  Tambah 1 Lagi
-                </button>
+                <p className="small text-secondary mt-2 mb-0">
+                  Harga satuan: {menu ? formatRupiah(menuPrices[menu]) : 'Pilih kategori dan menu terlebih dahulu'}
+                  {menu && <> &bull; Subtotal: <strong>{formatRupiah(menuPrices[menu] * jumlah)}</strong></>}
+                </p>
                 <p className="small text-secondary">Pemesanan di atas 15 porsi untuk rapat/acara kampus, konfirmasi via WA H-1.</p>
               </div>
               <fieldset className="mb-3">
                 <legend>Jenis Layanan <span>*</span></legend>
                 <label className="form-check d-block">
-                  <input className="form-check-input" type="radio" name="layanan" value="Makan di Tempat" defaultChecked />
+                  <input className="form-check-input" type="radio" name="layanan" value="Makan di Tempat" checked={layanan === 'Makan di Tempat'} onChange={(event) => setLayanan(event.target.value)} />
                   <span><strong>Makan di Tempat</strong><br /><small className="text-secondary">Reservasi meja warung (dine-in santai &amp; higienis)</small></span>
                 </label>
                 <label className="form-check d-block">
-                  <input className="form-check-input" type="radio" name="layanan" value="Take Away" />
+                  <input className="form-check-input" type="radio" name="layanan" value="Take Away" checked={layanan === 'Take Away'} onChange={(event) => setLayanan(event.target.value)} />
                   <span><strong>Take Away</strong><br /><small className="text-secondary">Bungkus rapi, ambil langsung di warung tanpa antre</small></span>
                 </label>
                 <label className="form-check d-block">
-                  <input className="form-check-input" type="radio" name="layanan" value="Delivery Grogol" />
+                  <input className="form-check-input" type="radio" name="layanan" value="Delivery Grogol" checked={layanan === 'Delivery Grogol'} onChange={(event) => setLayanan(event.target.value)} />
                   <span><strong>Delivery Grogol</strong><br /><small className="text-secondary">Antar ke kos/kantor area Trisakti, UNTAR &amp; sekitarnya</small></span>
                 </label>
               </fieldset>
               <div className="mb-3">
                 <label className="form-label" htmlFor="catatan">Level Pedas &amp; Catatan Khusus</label>
-                <textarea className="form-control" id="catatan" name="catatan" rows="4" placeholder="Level pedas 1-5, tanpa timun, sambal dipisah, nomor meja, atau alamat pengiriman..." />
+                <textarea className="form-control" id="catatan" name="catatan" rows="4" value={catatan} onChange={(event) => setCatatan(event.target.value)} placeholder="Level pedas 1-5, tanpa timun, sambal dipisah, nomor meja, atau alamat pengiriman..." />
                 <p className="small text-secondary">Saran cepat: Level 3 &bull; Level 5 Nampol &bull; Sambal dipisah &bull; No timun</p>
               </div>
               <div className="mb-3">
                 <label className="d-flex align-items-start gap-2">
                   <input type="checkbox" name="setuju" required />
-                  Saya menyetujui detail pesanan sudah benar dan bersedia dihubungi via WhatsApp oleh admin Ayam Pak Gondesss.
+                  Saya menyetujui detail pesanan sudah benar.
                 </label>
               </div>
-              <button className="btn btn-danger" type="submit">Kirim Pesanan Sekarang</button>
-              <p className="small text-secondary mt-2">Tidak dipungut biaya pendaftaran formulir.</p>
+              <button className="btn btn-danger" type="submit">
+                Buat Pesanan {menu ? `• ${formatRupiah(menuPrices[menu] * jumlah)}` : ''}
+              </button>
+              <p className="small text-secondary mt-2 mb-0">Pesanan langsung tersimpan di browser ini tanpa pengiriman ke server.</p>
             </form>
+            )}
 
             <aside className="col-lg-4">
               <div className="d-flex flex-column gap-4">
