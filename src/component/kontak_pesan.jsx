@@ -222,10 +222,9 @@ function KontakPesan() {
                   </div>
                   <div className="d-flex justify-content-between align-items-start gap-3 py-2">
                     <strong>WhatsApp Admin</strong>
-                    <a className="text-nowrap" href="https://wa.me/6281234567890">+62 812-3456-7890</a>
+                    <span className="text-nowrap">+62 812-3456-7890</span>
                   </div>
                   <p className="small text-secondary mt-2 mb-0">Gratis antar radius 1 km untuk mahasiswa, kosan Susilo, Makaliwe, dan sekitarnya (minimal 2 porsi).</p>
-                  <a className="btn btn-danger align-self-start mt-3" href="https://wa.me/6281234567890">Hubungi via WhatsApp</a>
                 </div>
                 <div className="card p-4">
                   <h2 className="h3 mb-3">Tautan Terkait</h2>

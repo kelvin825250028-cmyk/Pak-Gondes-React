@@ -142,11 +142,10 @@ function Menu() {
         <div className="container">
           <h2>Sudah menentukan pilihan menu lezatmu?</h2>
           <p className="text-secondary">{itemCount > 0 ? `${itemCount} item ada di keranjang.` : 'Tambahkan menu ke keranjang untuk melanjutkan pesanan.'}</p>
-          <p className="text-secondary">Isi formulir pemesanan online atau chat WhatsApp admin untuk nasi box kantor, kumpul kampus, atau makan siang cepat.</p>
+          <p className="text-secondary">Isi formulir pemesanan online untuk nasi box kantor, kumpul kampus, atau makan siang cepat.</p>
           <div className="d-flex gap-3 flex-wrap mt-3">
             <a className="btn btn-danger" href={pageUrl('cart')}>Lihat Keranjang</a>
             <a className="btn btn-danger" href={pageUrl('kontak')}>Pesan via Formulir Online</a>
-            <a className="btn btn-outline-danger" href="https://wa.me/6281234567890">WhatsApp Cepat (0812-3456-7890)</a>
           </div>
         </div>
       </section>
