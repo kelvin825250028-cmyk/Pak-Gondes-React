@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { useCart } from './cart-hook.js'
 import { formatRupiah, readOrders, saveOrders } from './cart-utils.js'
 import { pageUrl } from './navigation.js'
+import { printReceipt } from './receipt.js'
 
 function Cart() {
   const { items, total, updateQuantity, clearCart } = useCart()
   const [customer, setCustomer] = useState({ name: '', phone: '', service: 'Take Away', notes: '' })
   const [order, setOrder] = useState(null)
+  const [printError, setPrintError] = useState('')
 
   function updateCustomer(event) {
     setCustomer({ ...customer, [event.target.name]: event.target.value })
@@ -76,9 +78,16 @@ function Cart() {
                 <p className="text-center small border-top pt-3 mt-3 mb-0">Terima kasih telah memesan. Simpan struk ini sebagai bukti pesanan.</p>
               </article>
               <div className="d-flex justify-content-center gap-2 flex-wrap mt-3 receipt-actions">
-                <button className="btn btn-danger" type="button" onClick={() => window.print()}>
+                <button
+                  className="btn btn-danger"
+                  type="button"
+                  onClick={() => setPrintError(
+                    printReceipt(order) ? '' : 'Jendela cetak diblokir browser. Izinkan pop-up lalu coba lagi.',
+                  )}
+                >
                   <i className="bi bi-printer me-1" aria-hidden="true" />Cetak Struk
                 </button>
+                {printError && <p className="alert alert-warning mb-0" role="alert">{printError}</p>}
                 <a className="btn btn-outline-danger" href={pageUrl('menu')}>Kembali ke Menu</a>
               </div>
             </div>

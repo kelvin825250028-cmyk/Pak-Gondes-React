@@ -124,27 +124,3 @@ body {
 .adminlte-dashboard .card-title {
   font-size: 1.1rem;
 }
-
-@media print {
-  body:has(.cart-receipt) * {
-    visibility: hidden !important;
-  }
-
-  .cart-receipt,
-  .cart-receipt * {
-    visibility: visible !important;
-  }
-
-  .cart-receipt {
-    position: absolute;
-    inset: 0 auto auto 0;
-    width: 100%;
-    max-width: none;
-    border: 0 !important;
-    box-shadow: none !important;
-  }
-
-  .receipt-actions {
-    display: none !important;
-  }
-}

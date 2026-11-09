@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { pageUrl } from './index.jsx'
+import { menuByCategory } from './order-menu.js'
 
 function KontakPesan() {
   const [nama, setNama] = useState('')
   const [jumlah, setJumlah] = useState(1)
+  const [kategori, setKategori] = useState('')
+  const [menu, setMenu] = useState('')
 
   return (
     <>
@@ -44,17 +47,39 @@ function KontakPesan() {
               </div>
               <div className="mb-3">
                 <label className="form-label" htmlFor="kategori">Kategori Menu <span>*</span></label>
-                <select className="form-select" id="kategori" name="kategori" required defaultValue="">
+                <select
+                  className="form-select"
+                  id="kategori"
+                  name="kategori"
+                  required
+                  value={kategori}
+                  onChange={(event) => {
+                    setKategori(event.target.value)
+                    setMenu('')
+                  }}
+                >
                   <option value="">-- Pilih Kategori --</option>
-                  <option>Paket Nasi</option>
-                  <option>Paket Indomie</option>
-                  <option>Ala Carte &amp; Cemilan</option>
-                  <option>Aneka Minuman</option>
+                  {Object.keys(menuByCategory).map((category) => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
                 </select>
               </div>
               <div className="mb-3">
                 <label className="form-label" htmlFor="menu">Menu Spesifik <span>*</span></label>
-                <input type="text" className="form-control" id="menu" name="menu" placeholder="Contoh: Nasi Ayam Geprek Sambal Gondes" required />
+                <select
+                  className="form-select"
+                  id="menu"
+                  name="menu"
+                  required
+                  disabled={!kategori}
+                  value={menu}
+                  onChange={(event) => setMenu(event.target.value)}
+                >
+                  <option value="">{kategori ? '-- Pilih Menu --' : 'Pilih kategori terlebih dahulu'}</option>
+                  {(menuByCategory[kategori] || []).map((menuName) => (
+                    <option key={menuName} value={menuName}>{menuName}</option>
+                  ))}
+                </select>
               </div>
               <div className="mb-3">
                 <label className="form-label" htmlFor="jumlah">Jumlah Porsi / Box <span>*</span></label>
