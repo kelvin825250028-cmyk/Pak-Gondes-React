@@ -1,16 +1,34 @@
-# React + Vite
+# Ayam Pak Gondesss
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Website React/Vite untuk menampilkan menu dan menerima pesanan Ayam Pak Gondesss.
 
-Currently, two official plugins are available:
+## Menjalankan aplikasi
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```sh
+npm install
+npm run dev
+```
 
-## React Compiler
+## Deploy ke GitHub Pages
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Setelah perubahan didorong ke branch `main`, workflow GitHub Actions akan membangun dan menerbitkan website secara otomatis. Deploy manual juga dapat dijalankan dari tab **Actions** dengan workflow **Deploy to GitHub Pages**.
 
-## Expanding the Oxlint configuration
+URL website: https://kelvin825250028-cmyk.github.io/Pak-Gondes-React-plus-ADMIN-DAN-Keranjang/
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Keranjang dan dashboard
+
+Pilih menu dari halaman **Menu**, tambahkan ke keranjang, lalu isi detail pemesan dan buat pesanan. Pesanan langsung dicatat tanpa konfirmasi WhatsApp, lalu struk ditampilkan dan dapat dicetak. Data keranjang dan pesanan disimpan di `localStorage` browser; dashboard admin membaca pesanan dari browser yang sama, dan perubahan status disimpan di sana. Data tidak disinkronkan ke browser atau perangkat lain.
+
+Halaman **Admin** meminta login dan menggunakan layout AdminLTE. Dashboard menampilkan tabel pesanan aktual dari keranjang dengan pencarian dan pengelolaan status. Tabel user pengunjung masih berisi data contoh, karena aplikasi belum mengumpulkan data pengunjung. Akun demo lokal:
+
+- Email: `admin@pakgondes.local`
+- Kata sandi: `GondesDemo2025!`
+
+Login ini hanya untuk demonstrasi. Kredensial dan data berada di frontend/browser; gunakan backend dengan autentikasi dan penyimpanan server sebelum aplikasi dipublikasikan atau dipakai untuk data nyata.
+
+## Pemeriksaan
+
+```sh
+npm run lint
+npm run build
+```

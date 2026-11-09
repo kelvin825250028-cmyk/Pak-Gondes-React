@@ -1,3 +1,9 @@
+import { useEffect, useState } from 'react'
+import { useCart } from './cart-hook.js'
+import { isStoreOpen } from './business-hours.js'
+import { pageUrl } from './navigation.js'
+export { pageUrl } from './navigation.js'
+
 const images = import.meta.glob('../images/*', {
   eager: true,
   import: 'default',
@@ -18,15 +24,20 @@ export function videoUrl(fileName) {
   return videos[`../videos/${fileName}`]
 }
 
-export function pageUrl(page, anchor = '') {
-  return `/?page=${page}${anchor ? `#${anchor}` : ''}`
-}
-
 export function SiteLayout({ activePage, children }) {
+  const { itemCount } = useCart()
+  const [storeOpen, setStoreOpen] = useState(isStoreOpen)
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setStoreOpen(isStoreOpen()), 60_000)
+    return () => window.clearInterval(timer)
+  }, [])
+
   return (
     <>
-      <div className="bg-dark text-center text-light py-2 small">
-        Buka setiap hari 10.00 - 22.00 WIB &bull; WA 0812-3456-7890 &bull;
+      <div className={`store-status-bar text-center text-light py-2 small ${storeOpen ? 'is-open' : 'is-closed'}`} role="status">
+        <strong>{storeOpen ? 'BUKA' : 'TUTUP'}</strong>
+        {' '}&bull; Setiap hari 10.00 - 22.00 WIB &bull; WA 0812-3456-7890 &bull;
         Grogol, Jakarta Barat
       </div>
       <header className="site-header sticky-top bg-white">
@@ -77,8 +88,22 @@ export function SiteLayout({ activePage, children }) {
             >
               Kontak
             </a>
+            <a
+              href={pageUrl('cart')}
+              className={`nav-link p-0 ${activePage === 'cart' ? 'text-danger' : ''}`}
+              aria-current={activePage === 'cart' ? 'page' : undefined}
+            >
+              <i className="bi bi-basket3 me-1" aria-hidden="true" />
+              Keranjang <span className="badge rounded-pill bg-danger">{itemCount}</span>
+            </a>
+            <a href={pageUrl('admin')} className={`nav-link p-0 ${activePage === 'admin' ? 'text-danger' : ''}`}>
+              Admin
+            </a>
           </nav>
-          <a className="btn btn-danger" href={pageUrl('kontak')}>Pesan Sekarang</a>
+          <a className="btn btn-danger" href={pageUrl('cart')} aria-label={`Buka keranjang, ${itemCount} item`}>
+            <i className="bi bi-basket3 me-1" aria-hidden="true" />
+            Keranjang <span className="badge rounded-pill bg-light text-danger ms-1">{itemCount}</span>
+          </a>
         </div>
       </header>
       <main>{children}</main>

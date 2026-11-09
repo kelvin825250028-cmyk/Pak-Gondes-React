@@ -1,4 +1,5 @@
 import { imageUrl, pageUrl, videoUrl } from './index.jsx'
+import { useCart } from './cart-hook.js'
 
 const menuPhotos = [
   { image: 'geprek-gondes.jpg', alt: 'Nasi Ayam Geprek Sambal Gondes', name: 'Nasi Ayam Geprek Sambal Gondes', price: 'Rp 30.000' },
@@ -31,11 +32,14 @@ const prices = [
   ['Ala Carte', 'Nasi Putih Pulen', 'Rp 8.000', 'Nasi putih hangat dari beras premium, porsi melimpah.'],
   ['Ala Carte', 'Krupuk Gendar / Kerung', 'Rp 3.000', 'Kerupuk tradisional khas Jawa Tengah dari beras, renyah dan gurih.'],
   ['Minuman', 'Es Teh Manis Jumbo', 'Rp 6.000', 'Teh melati wangi dengan gula pasir murni, disajikan dingin.', 'minuman'],
-  ['Minuman', 'Nutrisari Jeruk / Es Milo', 'Rp 8.000 / 12.000', 'Pilihan Nutrisari jeruk peras dingin atau susu malt cokelat Milo kental.'],
+  ['Minuman', 'Nutrisari Jeruk', 'Rp 8.000', 'Nutrisari rasa jeruk peras dingin.'],
+  ['Minuman', 'Es Milo', 'Rp 12.000', 'Susu malt cokelat Milo kental, disajikan dingin.'],
   ['Minuman', 'Air Mineral Botol 600ml', 'Rp 5.000', 'Air mineral kemasan praktis (tersedia dingin dan suhu ruang).'],
 ]
 
 function Menu() {
+  const { addItem, itemCount } = useCart()
+
   return (
     <>
       <section className="bg-body-tertiary py-5">
@@ -46,7 +50,7 @@ function Menu() {
           <h1>Daftar Menu Lengkap Ayam Pak Gondesss</h1>
           <p>Pilihan nasi paket, Indomie, lauk ala carte &amp; minuman segar dengan rasa juara dan harga bersahabat untuk mahasiswa, pekerja, dan keluarga.</p>
           <div className="d-flex gap-3 flex-wrap mt-3">
-            <a className="btn btn-danger" href={pageUrl('kontak')}>Pesan Cepat Sekarang</a>
+            <a className="btn btn-danger" href={pageUrl('cart')}>Pesan Cepat Sekarang</a>
           </div>
         </div>
       </section>
@@ -105,15 +109,29 @@ function Menu() {
                 <tr><th>KATEGORI</th><th>NAMA MENU</th><th className="text-end text-nowrap text-danger fw-bold">HARGA</th><th>KETERANGAN / KOMPOSISI</th><th>AKSI</th></tr>
               </thead>
               <tbody>
-                {prices.map(([category, name, price, description, id]) => (
-                  <tr id={id} key={name}>
-                    <td><span className="badge">{category}</span></td>
-                    <td><strong>{name}</strong></td>
-                    <td className="text-end text-nowrap text-danger fw-bold">{price}</td>
-                    <td>{description}</td>
-                    <td className="text-nowrap"><a href={pageUrl('kontak')}>Pesan &rarr;</a></td>
-                  </tr>
-                ))}
+                {prices.map(([category, name, price, description, id]) => {
+                  const unitPrice = Number(price.match(/\d[\d.]*/)?.[0].replaceAll('.', '') || 0)
+                  const productId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+                  return (
+                    <tr id={id} key={name}>
+                      <td><span className="badge">{category}</span></td>
+                      <td><strong>{name}</strong></td>
+                      <td className="text-end text-nowrap text-danger fw-bold">{price}</td>
+                      <td>{description}</td>
+                      <td className="text-nowrap">
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          type="button"
+                          onClick={() => addItem({ id: productId, name, price: unitPrice })}
+                          aria-label={`Tambah ${name} ke keranjang`}
+                        >
+                          <i className="bi bi-plus-lg me-1" aria-hidden="true" />
+                          Tambah
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -123,8 +141,10 @@ function Menu() {
       <section className="bg-body-tertiary py-5">
         <div className="container">
           <h2>Sudah menentukan pilihan menu lezatmu?</h2>
+          <p className="text-secondary">{itemCount > 0 ? `${itemCount} item ada di keranjang.` : 'Tambahkan menu ke keranjang untuk melanjutkan pesanan.'}</p>
           <p className="text-secondary">Isi formulir pemesanan online atau chat WhatsApp admin untuk nasi box kantor, kumpul kampus, atau makan siang cepat.</p>
           <div className="d-flex gap-3 flex-wrap mt-3">
+            <a className="btn btn-danger" href={pageUrl('cart')}>Lihat Keranjang</a>
             <a className="btn btn-danger" href={pageUrl('kontak')}>Pesan via Formulir Online</a>
             <a className="btn btn-outline-danger" href="https://wa.me/6281234567890">WhatsApp Cepat (0812-3456-7890)</a>
           </div>

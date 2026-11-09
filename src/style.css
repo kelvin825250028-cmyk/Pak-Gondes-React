@@ -47,3 +47,104 @@ body {
 .photo {
   aspect-ratio: 4 / 3;
 }
+
+.store-status-bar {
+  background: #198754;
+}
+
+.store-status-bar.is-closed {
+  background: #6c1b22;
+}
+
+.cart-item {
+  background: #fff;
+}
+
+.cart-quantity {
+  max-width: 88px;
+}
+
+.cart-checkout {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+.cart-receipt-wrap {
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.cart-receipt {
+  background: #fff;
+}
+
+.admin-login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: #e9ecef;
+}
+
+.admin-login-card {
+  width: min(100%, 400px);
+}
+
+.adminlte-dashboard {
+  min-height: 100vh;
+  --lte-sidebar-width: 250px;
+}
+
+.adminlte-dashboard .app-sidebar {
+  --lte-sidebar-width: 250px;
+}
+
+.adminlte-dashboard .nav-link p {
+  display: inline;
+  margin: 0 0 0 0.5rem;
+}
+
+.adminlte-dashboard .small-box {
+  min-height: 125px;
+  overflow: hidden;
+}
+
+.adminlte-dashboard .small-box .inner {
+  padding: 1rem;
+}
+
+.adminlte-dashboard .small-box h3 {
+  font-weight: 700;
+}
+
+.admin-search {
+  width: min(100%, 320px);
+}
+
+.adminlte-dashboard .card-title {
+  font-size: 1.1rem;
+}
+
+@media print {
+  body:has(.cart-receipt) * {
+    visibility: hidden !important;
+  }
+
+  .cart-receipt,
+  .cart-receipt * {
+    visibility: visible !important;
+  }
+
+  .cart-receipt {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    max-width: none;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .receipt-actions {
+    display: none !important;
+  }
+}
