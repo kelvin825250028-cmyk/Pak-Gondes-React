@@ -112,7 +112,7 @@ function Admin() {
               <button className="btn btn-danger w-100" type="submit">Masuk ke Dashboard</button>
             </form>
             <p className="small text-secondary mt-3 mb-0">
-              Login demo tampilan saja. Akun dan data tidak terhubung ke backend.
+              Login menggunakan Email yang disediakan
             </p>
           </div>
         </div>
