@@ -47,6 +47,7 @@ export function SiteLayout({ activePage, children }) {
             <small className="text-secondary">KHAS GROGOL PEDAS NIKMAT</small>
           </a>
           <nav
+            id="nav"
             className="d-flex align-items-center gap-3 flex-wrap fw-semibold"
             aria-label="Navigasi utama"
           >
@@ -106,7 +107,7 @@ export function SiteLayout({ activePage, children }) {
           </a>
         </div>
       </header>
-      <main>{children}</main>
+      <main id="main">{children}</main>
       <footer className="bg-dark text-light py-5">
         <div className="container">
           <div className="row g-4 align-items-stretch">
