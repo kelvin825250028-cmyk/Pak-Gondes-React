@@ -1,38 +1,12 @@
 import { imageUrl, pageUrl, videoUrl } from './index.jsx'
+import { formatRupiah } from './cart-utils.js'
+import useMenuCatalog from './use-menu-catalog.js'
 
-const favorites = [
-  {
-    image: 'geprek-gondes.jpg',
-    alt: 'Nasi Ayam Geprek Gondes',
-    label: 'PEDAS NAMPOL',
-    name: 'Nasi Ayam Geprek Gondes',
-    price: 'Rp 30.000',
-    description: 'Nasi pulen hangat, ayam crispy geprek dengan ulegan sambal rawit merah, timun segar.',
-  },
-  {
-    image: 'sambal-kampoeng.jpg',
-    alt: 'Nasi Ayam Sambal Kampoeng',
-    label: 'KREMES GURIH',
-    name: 'Nasi Ayam Sambal Kampoeng',
-    price: 'Rp 30.000',
-    description: 'Ayam goreng bumbu kuning gurih, taburan kremes renyah, dan sambal khas racikan.',
-  },
-  {
-    image: 'kalasan.jpg',
-    alt: 'Nasi Ayam Goreng Kalasan',
-    label: 'MANIS GURIH',
-    name: 'Nasi Ayam Goreng Kalasan',
-    price: 'Rp 36.000',
-    description: 'Ayam 1/4 ekor ungkep manis gurih, kremesan kriuk, lalapan selada dan sambal terasi.',
-  },
-  {
-    image: 'geprek-mozarella.jpg',
-    alt: 'Ayam Geprek Mozarella',
-    label: 'KEJU LUMER',
-    name: 'Ayam Geprek Mozarella',
-    price: 'Rp 38.000',
-    description: 'Ayam geprek krispi pedas gurih dengan keju mozarella melimpah di atasnya.',
-  },
+const featuredMenu = [
+  ['nasi-ayam-geprek-sambal-gondes', 'PEDAS NAMPOL'],
+  ['nasi-ayam-goreng-sambal-kampoeng', 'KREMES GURIH'],
+  ['nasi-ayam-goreng-kalasan', 'MANIS GURIH'],
+  ['nasi-ayam-geprek-mozarella-sambal-gondes', 'KEJU LUMER'],
 ]
 
 function KartuFavorit({ image, alt, label, name, price, description }) {
@@ -51,6 +25,14 @@ function KartuFavorit({ image, alt, label, name, price, description }) {
 }
 
 function Beranda() {
+  const [menuItems] = useMenuCatalog()
+  const favorites = featuredMenu
+    .map(([id, label]) => {
+      const item = menuItems.find((menuItem) => menuItem.id === id)
+      return item ? { ...item, label, alt: item.name, price: formatRupiah(item.price) } : null
+    })
+    .filter(Boolean)
+
   return (
     <>
       <section className="bg-body-tertiary py-5">

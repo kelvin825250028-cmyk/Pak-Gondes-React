@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { pageUrl } from './index.jsx'
-import { createContactOrder, menuByCategory, menuPrices } from './order-menu.js'
+import { createContactOrder, getMenuByCategory } from './order-menu.js'
 import { formatRupiah, readOrders, saveOrders } from './cart-utils.js'
 import { printReceipt } from './receipt.js'
+import useMenuCatalog from './use-menu-catalog.js'
 
 function KontakPesan() {
+  const [menuItems] = useMenuCatalog()
+  const menuByCategory = getMenuByCategory(menuItems)
   const [nama, setNama] = useState('')
   const [telepon, setTelepon] = useState('')
   const [jumlah, setJumlah] = useState(1)
@@ -14,6 +17,7 @@ function KontakPesan() {
   const [catatan, setCatatan] = useState('')
   const [order, setOrder] = useState(null)
   const [printError, setPrintError] = useState('')
+  const selectedMenu = menuItems.find((item) => item.category === kategori && item.name === menu)
 
   function submitOrder(event) {
     event.preventDefault()
@@ -161,8 +165,8 @@ function KontakPesan() {
                   required
                 />
                 <p className="small text-secondary mt-2 mb-0">
-                  Harga satuan: {menu ? formatRupiah(menuPrices[menu]) : 'Pilih kategori dan menu terlebih dahulu'}
-                  {menu && <> &bull; Subtotal: <strong>{formatRupiah(menuPrices[menu] * jumlah)}</strong></>}
+                  Harga satuan: {selectedMenu ? formatRupiah(selectedMenu.price) : 'Pilih kategori dan menu terlebih dahulu'}
+                  {selectedMenu && <> &bull; Subtotal: <strong>{formatRupiah(selectedMenu.price * jumlah)}</strong></>}
                 </p>
                 <p className="small text-secondary">Pemesanan di atas 15 porsi untuk rapat/acara kampus, konfirmasi via WA H-1.</p>
               </div>
@@ -193,7 +197,7 @@ function KontakPesan() {
                 </label>
               </div>
               <button className="btn btn-danger" type="submit">
-                Buat Pesanan {menu ? `• ${formatRupiah(menuPrices[menu] * jumlah)}` : ''}
+                Buat Pesanan {selectedMenu ? `• ${formatRupiah(selectedMenu.price * jumlah)}` : ''}
               </button>
               <p className="small text-secondary mt-2 mb-0">Pesanan langsung tersimpan di browser ini tanpa pengiriman ke server.</p>
             </form>

@@ -1,44 +1,31 @@
 import { imageUrl, pageUrl, videoUrl } from './index.jsx'
 import { useCart } from './cart-hook.js'
-
-const menuPhotos = [
-  { image: 'geprek-gondes.jpg', alt: 'Nasi Ayam Geprek Sambal Gondes', name: 'Nasi Ayam Geprek Sambal Gondes', price: 'Rp 30.000' },
-  { image: 'sambal-kampoeng.jpg', alt: 'Nasi Ayam Goreng Sambal Kampoeng', name: 'Nasi Ayam Goreng Sambal Kampoeng', price: 'Rp 30.000' },
-  { image: 'kalasan.jpg', alt: 'Nasi Ayam Goreng Kalasan', name: 'Nasi Ayam Goreng Kalasan', price: 'Rp 36.000' },
-  { image: 'geprek-mozarella.jpg', alt: 'Nasi Ayam Geprek Mozarella', name: 'Nasi Ayam Geprek Mozarella', price: 'Rp 38.000' },
-  { image: 'sambal-matah.jpg', alt: 'Nasi Ayam Sambal Matah', name: 'Nasi Ayam Sambal Matah', price: 'Rp 34.000' },
-  { image: 'nasi-goreng.jpg', alt: 'Nasi Goreng Kampoeng', name: 'Nasi Goreng Kampoeng', price: 'Rp 29.000' },
-  { image: 'indomie.jpg', alt: 'Indomie Ayam Geprek Sambal Gondes', name: 'Indomie Ayam Geprek Sambal Gondes', price: 'Rp 25.000' },
-  { image: 'es-teh.jpg', alt: 'Es Teh Manis Jumbo', name: 'Es Teh Manis Jumbo', price: 'Rp 6.000' },
-]
-
-const prices = [
-  ['Paket Nasi', 'Nasi Ayam Geprek Sambal Gondes', 'Rp 30.000', 'Nasi putih pulen, ayam crispy geprek berlumur sambal gondes ulek dadakan, lalapan segar.', 'paket-nasi'],
-  ['Paket Nasi', 'Nasi Ayam Goreng Sambal Kampoeng', 'Rp 30.000', 'Nasi + ayam goreng rempah gurih, taburan kremesan garing, sambal terasi matang khas Semarang.'],
-  ['Paket Nasi', 'Nasi Ayam Goreng Kalasan', 'Rp 36.000', 'Nasi + ayam goreng 1/4 ekor ungkep bumbu kalasan manis gurih, kremes, sambal & lalap.'],
-  ['Paket Nasi', 'Nasi Ayam Geprek Mozarella Sambal Gondes', 'Rp 38.000', 'Nasi hangat, ayam geprek sambal gondes dengan lelehan keju mozarella berlimpah.'],
-  ['Paket Nasi', 'Nasi Ayam Sambal Matah', 'Rp 34.000', 'Nasi putih dan ayam crispy dengan irisan bawang merah, serai, cabai rawit, minyak kelapa.'],
-  ['Paket Nasi', 'Nasi Goreng Kampoeng', 'Rp 29.000', 'Nasi goreng aroma wajan rempah tradisional, suwiran ayam, pilihan telur ceplok/dadar.'],
-  ['Paket Indomie', 'Indomie Ayam Geprek Sambal Gondes', 'Rp 25.000', 'Indomie goreng atau kuah bersama 1 potong ayam geprek berlumur sambal.', 'paket-indomie'],
-  ['Paket Indomie', 'Indomie Telor Ceplok / Dadar', 'Rp 18.000', 'Indomie goreng / kuah dengan sawi hijau segar dan telur ceplok atau dadar.'],
-  ['Paket Indomie', 'Indomie Saja', 'Rp 12.000', 'Indomie goreng atau kuah dengan sentuhan sambal cabai geprek khas Pak Gondesss.'],
-  ['Paket Indomie', 'Indomie Ayam Geprek Mozzarella Sambal Gondes', 'Rp 39.000', 'Indomie goreng, ayam geprek pedas, dan lelehan keju mozzarella legit.'],
-  ['Ala Carte', 'Ayam Geprek Sambal Gondes', 'Rp 25.000', '1 porsi ayam geprek gurih garing tanpa nasi, level pedas 1 sampai 5.', 'ala-carte'],
-  ['Ala Carte', 'Ayam Goreng Sambal Kampoeng', 'Rp 25.000', '1 potong ayam goreng bumbu kuning dengan kremes dan sambal kampoeng.'],
-  ['Ala Carte', 'Ayam Goreng Kalasan', 'Rp 32.000', 'Ayam 1/4 ekor ungkep santan gula jawa, gurih manis empuk sampai ke tulang.'],
-  ['Ala Carte', 'Terong Crispy Geprek', 'Rp 12.000', 'Irisan terong berlapis tepung renyah digeprek dengan cabai rawit merah.'],
-  ['Ala Carte', 'Jamur Crispy', 'Rp 13.000', 'Jamur tiram segar dibalut tepung berbumbu, digoreng kering renyah.'],
-  ['Ala Carte', 'Telor Ceplok / Dadar', 'Rp 8.000', 'Telur ayam negeri, ceplok (mata sapi) atau dadar daun bawang.'],
-  ['Ala Carte', 'Nasi Putih Pulen', 'Rp 8.000', 'Nasi putih hangat dari beras premium, porsi melimpah.'],
-  ['Ala Carte', 'Krupuk Gendar / Kerung', 'Rp 3.000', 'Kerupuk tradisional khas Jawa Tengah dari beras, renyah dan gurih.'],
-  ['Minuman', 'Es Teh Manis Jumbo', 'Rp 6.000', 'Teh melati wangi dengan gula pasir murni, disajikan dingin.', 'minuman'],
-  ['Minuman', 'Nutrisari Jeruk', 'Rp 8.000', 'Nutrisari rasa jeruk peras dingin.'],
-  ['Minuman', 'Es Milo', 'Rp 12.000', 'Susu malt cokelat Milo kental, disajikan dingin.'],
-  ['Minuman', 'Air Mineral Botol 600ml', 'Rp 5.000', 'Air mineral kemasan praktis (tersedia dingin dan suhu ruang).'],
-]
+import { formatRupiah } from './cart-utils.js'
+import { menuCategoryLabels } from './menu-data.js'
+import useMenuCatalog from './use-menu-catalog.js'
 
 function Menu() {
   const { addItem, itemCount } = useCart()
+  const [menuItems] = useMenuCatalog()
+  const menuPhotos = menuItems
+    .filter((item) => item.image)
+    .map((item) => ({ ...item, alt: item.name, price: formatRupiah(item.price) }))
+  const categoryAnchors = {
+    'Paket Spesial': 'paket-spesial',
+    'Paket Nasi': 'paket-nasi',
+    'Paket Indomie': 'paket-indomie',
+    'Ala Carte & Cemilan': 'ala-carte',
+    'Aneka Minuman': 'minuman',
+  }
+  const anchoredMenuItems = []
+  const seenCategories = new Set()
+  for (const item of menuItems) {
+    anchoredMenuItems.push({
+      ...item,
+      anchor: !seenCategories.has(item.category) ? categoryAnchors[item.category] : undefined,
+    })
+    seenCategories.add(item.category)
+  }
 
   return (
     <>
@@ -109,21 +96,19 @@ function Menu() {
                 <tr><th>KATEGORI</th><th>NAMA MENU</th><th className="text-end text-nowrap text-danger fw-bold">HARGA</th><th>KETERANGAN / KOMPOSISI</th><th>AKSI</th></tr>
               </thead>
               <tbody>
-                {prices.map(([category, name, price, description, id]) => {
-                  const unitPrice = Number(price.match(/\d[\d.]*/)?.[0].replaceAll('.', '') || 0)
-                  const productId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+                {anchoredMenuItems.map((item) => {
                   return (
-                    <tr id={id} key={name}>
-                      <td><span className="badge">{category}</span></td>
-                      <td><strong>{name}</strong></td>
-                      <td className="text-end text-nowrap text-danger fw-bold">{price}</td>
-                      <td>{description}</td>
+                    <tr id={item.anchor} key={item.id}>
+                      <td><span className="badge">{menuCategoryLabels[item.category]}</span></td>
+                      <td><strong>{item.name}</strong></td>
+                      <td className="text-end text-nowrap text-danger fw-bold">{formatRupiah(item.price)}</td>
+                      <td>{item.description}</td>
                       <td className="text-nowrap">
                         <button
                           className="btn btn-sm btn-outline-danger"
                           type="button"
-                          onClick={() => addItem({ id: productId, name, price: unitPrice })}
-                          aria-label={`Tambah ${name} ke keranjang`}
+                          onClick={() => addItem({ id: item.id, name: item.name, price: item.price })}
+                          aria-label={`Tambah ${item.name} ke keranjang`}
                         >
                           <i className="bi bi-plus-lg me-1" aria-hidden="true" />
                           Tambah

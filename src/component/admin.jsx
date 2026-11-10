@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import 'admin-lte/dist/js/adminlte.esm.js'
 import adminLteStylesheet from 'admin-lte/dist/css/adminlte.css?url'
 import { formatRupiah, readOrders, saveOrders } from './cart-utils.js'
+import { createMenuId, menuCategories, saveMenu } from './menu-data.js'
 import { pageUrl } from './navigation.js'
+import useMenuCatalog from './use-menu-catalog.js'
 
 const ADMIN_EMAIL = 'admin@pakgondes.local'
 const ADMIN_PASSWORD = 'GondesDemo2025!'
@@ -20,6 +22,15 @@ function Admin() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [orders, setOrders] = useState(readOrders)
+  const [menuItems, setMenuItems] = useMenuCatalog()
+  const [editingMenuId, setEditingMenuId] = useState(null)
+  const [menuForm, setMenuForm] = useState({
+    category: menuCategories[0],
+    name: '',
+    price: '',
+    description: '',
+  })
+  const [menuError, setMenuError] = useState('')
 
   useEffect(() => {
     function syncOrders(event) {
@@ -54,6 +65,64 @@ function Admin() {
     ))
     saveOrders(updatedOrders)
     setOrders(updatedOrders)
+  }
+
+  function submitMenu(event) {
+    event.preventDefault()
+    const price = Number(menuForm.price)
+    const name = menuForm.name.trim()
+    const description = menuForm.description.trim()
+    if (!name || !description) {
+      setMenuError('Nama dan deskripsi menu tidak boleh kosong.')
+      return
+    }
+    if (!Number.isSafeInteger(price) || price < 0) {
+      setMenuError('Harga harus berupa angka Rupiah bulat dan tidak boleh negatif.')
+      return
+    }
+    if (menuItems.some((item) => (
+      item.id !== editingMenuId
+      && item.category === menuForm.category
+      && item.name.toLocaleLowerCase('id-ID') === name.toLocaleLowerCase('id-ID')
+    ))) {
+      setMenuError('Nama menu sudah ada di kategori tersebut.')
+      return
+    }
+
+    const menuDetails = { ...menuForm, name, description, price }
+    const updatedMenu = editingMenuId
+      ? menuItems.map((item) => (
+        item.id === editingMenuId ? { ...item, ...menuDetails } : item
+      ))
+      : [...menuItems, { ...menuDetails, id: createMenuId(name) }]
+
+    try {
+      saveMenu(updatedMenu)
+      setMenuItems(updatedMenu)
+      setEditingMenuId(null)
+      setMenuForm({ category: menuCategories[0], name: '', price: '', description: '' })
+      setMenuError('')
+    } catch (saveError) {
+      setMenuError(`Menu gagal disimpan di browser ini: ${saveError.message}`)
+    }
+  }
+
+  function editMenu(item) {
+    setEditingMenuId(item.id)
+    setMenuForm({
+      category: item.category,
+      name: item.name,
+      price: String(item.price),
+      description: item.description,
+    })
+    setMenuError('')
+    document.getElementById('menu-category')?.focus()
+  }
+
+  function cancelMenuEdit() {
+    setEditingMenuId(null)
+    setMenuForm({ category: menuCategories[0], name: '', price: '', description: '' })
+    setMenuError('')
   }
 
   const normalizedSearch = search.trim().toLocaleLowerCase('id-ID')
@@ -160,6 +229,11 @@ function Admin() {
                 </a>
               </li>
               <li className="nav-item">
+                <a className="nav-link" href="#menu-management">
+                  <i className="nav-icon bi bi-egg-fried" aria-hidden="true" /><p>Kelola Menu</p>
+                </a>
+              </li>
+              <li className="nav-item">
                 <a className="nav-link" href="#visitors">
                   <i className="nav-icon bi bi-people" aria-hidden="true" /><p>User Pengunjung</p>
                 </a>
@@ -207,6 +281,97 @@ function Admin() {
                 <div className="small-box text-bg-danger"><div className="inner"><h3 className="fs-4">{formatRupiah(revenue)}</h3><p>Omzet Selesai</p></div><i className="small-box-icon bi bi-cash-stack" aria-hidden="true" /></div>
               </div>
             </div>
+            <section className="card mb-4" id="menu-management">
+              <div className="card-header">
+                <h2 className="card-title">{editingMenuId ? 'Edit Menu' : 'Tambah Menu'}</h2>
+              </div>
+              <div className="card-body">
+                <form className="row g-3" onSubmit={submitMenu}>
+                  <div className="col-md-4">
+                    <label className="form-label" htmlFor="menu-category">Kategori</label>
+                    <select
+                      className="form-select"
+                      id="menu-category"
+                      value={menuForm.category}
+                      onChange={(event) => setMenuForm({ ...menuForm, category: event.target.value })}
+                    >
+                      {menuCategories.map((category) => <option key={category}>{category}</option>)}
+                    </select>
+                  </div>
+                  <div className="col-md-5">
+                    <label className="form-label" htmlFor="menu-name">Nama menu</label>
+                    <input
+                      className="form-control"
+                      id="menu-name"
+                      value={menuForm.name}
+                      onChange={(event) => setMenuForm({ ...menuForm, name: event.target.value })}
+                      maxLength="100"
+                      required
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label" htmlFor="menu-price">Harga (Rupiah)</label>
+                    <input
+                      className="form-control"
+                      id="menu-price"
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={menuForm.price}
+                      onChange={(event) => setMenuForm({ ...menuForm, price: event.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label className="form-label" htmlFor="menu-description">Deskripsi</label>
+                    <textarea
+                      className="form-control"
+                      id="menu-description"
+                      rows="2"
+                      value={menuForm.description}
+                      onChange={(event) => setMenuForm({ ...menuForm, description: event.target.value })}
+                      maxLength="300"
+                      required
+                    />
+                  </div>
+                  {menuError && <div className="col-12"><p className="alert alert-danger mb-0" role="alert">{menuError}</p></div>}
+                  <div className="col-12 d-flex gap-2">
+                    <button className="btn btn-danger" type="submit">
+                      <i className={`bi ${editingMenuId ? 'bi-save' : 'bi-plus-lg'} me-1`} aria-hidden="true" />
+                      {editingMenuId ? 'Simpan Perubahan' : 'Tambah Menu'}
+                    </button>
+                    {editingMenuId && <button className="btn btn-outline-secondary" type="button" onClick={cancelMenuEdit}>Batal Edit</button>}
+                  </div>
+                </form>
+              </div>
+              <div className="card-header border-top">
+                <h3 className="card-title">Daftar Menu ({menuItems.length})</h3>
+              </div>
+              <div className="card-body p-0">
+                <div className="table-responsive">
+                  <table className="table table-striped table-hover align-middle mb-0">
+                    <thead><tr><th>Kategori</th><th>Nama Menu</th><th>Harga</th><th>Deskripsi</th><th>Aksi</th></tr></thead>
+                    <tbody>
+                      {menuItems.map((item) => (
+                        <tr key={item.id}>
+                          <td>{item.category}</td>
+                          <td><strong>{item.name}</strong></td>
+                          <td className="text-nowrap">{formatRupiah(item.price)}</td>
+                          <td>{item.description}</td>
+                          <td>
+                            <button className="btn btn-sm btn-outline-danger" type="button" onClick={() => editMenu(item)}>
+                              <i className="bi bi-pencil me-1" aria-hidden="true" />Edit
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {menuItems.length === 0 && <tr><td className="text-center text-secondary py-4" colSpan="5">Belum ada menu.</td></tr>}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="card-footer text-secondary small">Perubahan menu tersimpan di browser ini dan tersinkron ke tab website yang terbuka.</div>
+            </section>
             <div className="card mb-4" id="orders">
               <div className="card-header">
                 <h2 className="card-title">Tabel Pesanan</h2>
